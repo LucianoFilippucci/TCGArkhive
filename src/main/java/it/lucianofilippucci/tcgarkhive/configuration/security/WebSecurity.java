@@ -50,7 +50,8 @@ public class WebSecurity {
                 .authorizeHttpRequests(authorizeRequest ->
                         authorizeRequest
                                 .requestMatchers(
-                                        "/api/v1/user/auth/**"
+                                        "/api/v1/user/auth/**",
+                                        "/api/v1/optcg/card/{card-id}"
                                 ).permitAll().anyRequest().authenticated());
         http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

@@ -36,6 +36,7 @@ public class AuthController {
                             .timestamp(LocalDateTime.now())
                             .statusCode(HttpStatus.OK.value())
                             .errorCode(0)
+                            .data(loginResponse)
                             .build()
             );
         } catch (UsernameNotFoundException e) {
