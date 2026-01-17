@@ -1,5 +1,6 @@
-package it.lucianofilippucci.tcgarkhive.configuration.security.authentication;
+package it.lucianofilippucci.tcgarkhive.configuration.security;
 
+import it.lucianofilippucci.tcgarkhive.configuration.security.authentication.CustomWebAuthenticationDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

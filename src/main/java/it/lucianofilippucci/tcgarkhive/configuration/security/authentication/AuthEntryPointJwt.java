@@ -19,5 +19,4 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
             AuthenticationException authException) throws IOException, ServletException {
         res.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
     }
-    
 }
