@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface CardRepository extends JpaRepository<CardEntity, Long> {
     List<CardEntity> findByCardNameContainsAndTcgIs(String cardName, TCGEntity tcgEntity);
 
-    List<CardEntity> findByIdIsAndTcgIs(Long id, TCGEntity tcgEntity);
+    Optional<CardEntity> findByIdIsAndTcgIs(Long id, TCGEntity tcgEntity);
 }

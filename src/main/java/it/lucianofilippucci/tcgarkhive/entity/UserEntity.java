@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -31,6 +32,9 @@ public class UserEntity {
     @JsonIgnore
     private String password;
 
+    @Column(name = "isActive")
+    private boolean isActive;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -43,5 +47,5 @@ public class UserEntity {
 
     @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private Set<UserSessionEntity> userSessions;
+    private Set<UserSessionEntity> userSessions = new HashSet<>();
 }

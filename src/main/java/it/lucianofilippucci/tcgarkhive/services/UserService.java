@@ -53,6 +53,7 @@ public class UserService {
         user.setUsername(userRequest.getUsername());
         user.setEmail(userRequest.getEmail());
         user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
+        user.setActive(true);
         Optional<RolesEntity> role = this.rolesRepository.findByName("USER");
         if (role.isEmpty()) {
             System.out.println("Role not found");

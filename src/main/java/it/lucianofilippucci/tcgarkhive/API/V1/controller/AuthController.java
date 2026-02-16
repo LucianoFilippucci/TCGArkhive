@@ -35,7 +35,6 @@ public class AuthController {
                     HttpResponse.<LoginResponse>builder()
                             .timestamp(LocalDateTime.now())
                             .statusCode(HttpStatus.OK.value())
-                            .errorCode(0)
                             .data(loginResponse)
                             .build()
             );
@@ -52,7 +51,6 @@ public class AuthController {
                     HttpResponse.<LoginResponse>builder()
                             .timestamp(LocalDateTime.now())
                             .statusCode(HttpStatus.CREATED.value())
-                            .errorCode(0)
                             .data(loginResponse)
                     .build()
             );

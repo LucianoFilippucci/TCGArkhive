@@ -18,6 +18,13 @@ public class CardDTO {
     @JsonSetter
     public void setTcgId(Long tcgId) {this.tcgId = tcgId;}
 
+    @JsonProperty("card-id")
+    private Long cardId;
+    @JsonGetter
+    public Long getCardId() { return this.cardId; }
+    @JsonSetter
+    public void setCardId(Long cardId) { this.cardId = cardId; }
+
     @JsonProperty("card-name")
     private String cardName;
     @JsonGetter

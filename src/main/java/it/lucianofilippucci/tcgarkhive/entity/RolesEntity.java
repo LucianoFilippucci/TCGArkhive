@@ -3,6 +3,9 @@ package it.lucianofilippucci.tcgarkhive.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @ToString
