@@ -1,6 +1,7 @@
 package it.lucianofilippucci.tcgarkhive.API.V1.DTO;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import it.lucianofilippucci.tcgarkhive.helpers.enums.ErrorCodes;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 
@@ -14,5 +15,5 @@ public class HttpResponse<T> {
     protected Integer statusCode;
     protected String message;
     protected T data;
-    protected int errorCode;
+    protected ErrorCodes errorCode;
 }

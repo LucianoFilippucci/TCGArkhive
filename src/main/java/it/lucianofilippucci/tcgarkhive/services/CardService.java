@@ -42,7 +42,12 @@ public class CardService {
     }
 
     @Transactional
-    public List<CardEntity> getCard(Long cardId, TCGEntity tcg)  {
+    public Optional<CardEntity> getCard(Long cardId, TCGEntity tcg)  {
         return this.cardRepository.findByIdIsAndTcgIs(cardId, tcg);
+    }
+
+    @Transactional
+    public CardEntity saveCard(CardEntity card) {
+        return this.cardRepository.save(card);
     }
 }

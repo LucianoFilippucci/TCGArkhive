@@ -26,57 +26,14 @@ public class OnePieceTCGController {
         this.optcgService = optcgService;
     }
 
-    @PostMapping("new-card")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<HttpResponse<CardDTO>> newCard(@RequestBody CardDTO CardDTO) {
-        String message = "";
-        HttpStatus status = HttpStatus.CREATED;
-        int errorCode = 0;
-
-        CardDTO card = null;
-
-        try {
-            card = this.optcgService.createCard(CardDTO);
-        } catch (TCGNotFoundException e) {
-            message = e.getMessage();
-            status = HttpStatus.NOT_FOUND;
-            errorCode = 100;
-        }  catch (CardRarityNotFoundException e) {
-            message = e.getMessage();
-            status = HttpStatus.NOT_FOUND;
-            errorCode = 101;
-        } catch (RuntimeException e) {
-            message = "Server Error.";
-            status = HttpStatus.INTERNAL_SERVER_ERROR;
-            errorCode = status.value();
-        }
-
-        return ResponseEntity.ok(
-                HttpResponse.<CardDTO>builder()
-                        .timestamp(LocalDateTime.now())
-                        .statusCode(status.value())
-                        .message(message)
-                        .data(card)
-                        .build()
-        );
-    }
-
     @GetMapping("card/{card-id}")
-    public ResponseEntity<HttpResponse<CardDTO>> getCard(@PathVariable Long cardId) {
-        String message = "";
-        HttpStatus status = HttpStatus.OK;
-        List<CardDTO> card = this.optcgService.getCardFromId(cardId);
-
+    public ResponseEntity<HttpResponse<CardDTO>> getCard(@PathVariable("card-id") Long cardId) {
         return ResponseEntity.ok(
                 HttpResponse.<CardDTO>builder()
                         .timestamp(LocalDateTime.now())
-                        .data(card.getFirst())
+                        .data(this.optcgService.getCardFromId(cardId))
                         .statusCode(HttpStatus.OK.value())
-                        .message(card.isEmpty() ? "No Card Found" : "")
-                        .errorCode(card.isEmpty() ? 110 : 0)
                         .build()
         );
-
-
     }
 }
