@@ -7,6 +7,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -46,5 +48,8 @@ public class CardEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "rarity_id", nullable = false)
     private CardRarityEntity rarity;
+
+    @OneToMany(mappedBy = "card")
+    private List<TCGListEntry> lists = new ArrayList<>();
 
 }

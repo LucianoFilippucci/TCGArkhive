@@ -1,6 +1,7 @@
 package it.lucianofilippucci.tcgarkhive.configuration;
 
 import it.lucianofilippucci.tcgarkhive.API.V1.DTO.HttpResponse;
+import it.lucianofilippucci.tcgarkhive.entity.TCGListEntry;
 import it.lucianofilippucci.tcgarkhive.helpers.enums.ErrorCodes;
 import it.lucianofilippucci.tcgarkhive.helpers.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,6 +75,45 @@ public class GlobalExceptionHandler {
                                 .timestamp(LocalDateTime.now())
                                 .statusCode(HttpStatus.NOT_FOUND.value())
                                 .errorCode(ErrorCodes.CARD_NOT_FOUND)
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(UserTCGListNotFoundException.class)
+    public ResponseEntity<HttpResponse<String>> handleUserTcgListNotFound(UserTCGListNotFoundException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(
+                        HttpResponse.<String>builder()
+                                .timestamp(LocalDateTime.now())
+                                .statusCode(HttpStatus.NOT_FOUND.value())
+                                .errorCode(ErrorCodes.USER_TCG_LIST_NOT_FOUND)
+                                .data(ex.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<HttpResponse<String>> handleUnauthorized(UnauthorizedException ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                        HttpResponse.<String>builder()
+                                .timestamp(LocalDateTime.now())
+                                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                                .errorCode(ErrorCodes.UNAUTHORIZED_ACCESS)
+                                .data(ex.getMessage())
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(TCGListentryNotFound.class)
+    public ResponseEntity<HttpResponse<String>> handleTCGListEntryNotFound(TCGListentryNotFound ex, HttpServletRequest req) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(
+                        HttpResponse.<String>builder()
+                                .timestamp(LocalDateTime.now())
+                                .statusCode(HttpStatus.NOT_FOUND.value())
+                                .errorCode(ErrorCodes.TCG_LIST_ENTRY_NOT_FOUND)
+                                .data(ex.getMessage())
                                 .build()
                 );
     }

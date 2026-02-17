@@ -83,4 +83,20 @@ public class CardDTO {
     public void setCardDetails(CardDetails cardDetails) {this.cardDetails = cardDetails;}
 
 
+    @JsonIgnore
+    @Override
+    public String toString() {
+        return "CardDTO{" +
+                "tcgId=" + tcgId +
+                ", cardId=" + cardId +
+                ", cardName='" + cardName + '\'' +
+                ", secondaryCardName='" + secondaryCardName + '\'' +
+                ", externalId='" + externalId + '\'' +
+                ", setCode='" + setCode + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", cardRarityId=" + cardRarityId +
+                ", cardDetails=" + cardDetails +
+                '}';
+    }
 }
