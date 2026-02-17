@@ -2,17 +2,16 @@ package it.lucianofilippucci.tcgarkhive.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.lucianofilippucci.tcgarkhive.API.V1.DTO.Cards.CardDTO;
-import it.lucianofilippucci.tcgarkhive.entity.CardEntity;
-import it.lucianofilippucci.tcgarkhive.entity.CardRarityEntity;
-import it.lucianofilippucci.tcgarkhive.entity.TCGEntity;
+import it.lucianofilippucci.tcgarkhive.API.V1.DTO.TCGListDTO;
+import it.lucianofilippucci.tcgarkhive.API.V1.DTO.TCGListEntryDTO;
+import it.lucianofilippucci.tcgarkhive.entity.*;
 import it.lucianofilippucci.tcgarkhive.helpers.CardDetails.CardDetails;
 import it.lucianofilippucci.tcgarkhive.helpers.CardDetails.OnePieceTCG;
-import it.lucianofilippucci.tcgarkhive.helpers.exceptions.CardNotFoundException;
-import it.lucianofilippucci.tcgarkhive.helpers.exceptions.CardRarityNotFoundException;
-import it.lucianofilippucci.tcgarkhive.helpers.exceptions.InternalErrorException;
-import it.lucianofilippucci.tcgarkhive.helpers.exceptions.TCGNotFoundException;
+import it.lucianofilippucci.tcgarkhive.helpers.exceptions.*;
 import it.lucianofilippucci.tcgarkhive.repository.CardRarityRepository;
 import it.lucianofilippucci.tcgarkhive.repository.TCGRepository;
+import it.lucianofilippucci.tcgarkhive.repository.UserRepository;
+import it.lucianofilippucci.tcgarkhive.repository.UserTCGListRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +28,21 @@ public class OPTCGService {
     private final CardRarityRepository cardRarityRepository;
     private final ObjectMapper objectMapper;
 
-    public OPTCGService(CardService cardService, TCGRepository tcgRepository, CardRarityRepository cardRarityRepository, ObjectMapper objectMapper) {
+    private final UserTCGListRepository userTCGListRepository;
+    private final UserRepository userRepository;
+
+
+    private final TCGService tcgService;
+
+
+    public OPTCGService(CardService cardService, TCGRepository tcgRepository, CardRarityRepository cardRarityRepository, ObjectMapper objectMapper, UserTCGListRepository userTCGListRepository, UserRepository userRepository, TCGService tcgService) {
         this.cardService = cardService;
         this.tcgRepository = tcgRepository;
         this.cardRarityRepository = cardRarityRepository;
         this.objectMapper = objectMapper;
+        this.userTCGListRepository = userTCGListRepository;
+        this.userRepository = userRepository;
+        this.tcgService = tcgService;
     }
 
     @Transactional
@@ -140,4 +149,77 @@ public class OPTCGService {
         }
         return cardDTO;
     }
+
+    private TCGListEntryDTO fromEntity(TCGListEntry entry) {
+        TCGListEntryDTO entryDTO = new TCGListEntryDTO();
+
+        entryDTO.setEntryQuantity(entry.getQuantity());
+        entryDTO.setEntryId(entry.getId());
+        entryDTO.setListId(entry.getList().getId());
+        entryDTO.setTcgID(entryDTO.getTcgID());
+        entryDTO.setCard(this.fromEntity(entry.getCard()));
+
+        return entryDTO;
+    }
+
+
+    @Transactional
+    public TCGListDTO newList(TCGListDTO listDTO, String username) {
+        Optional<UserEntity> temp = this.userRepository.findByUsername(username);
+        if(temp.isEmpty()) throw new UserNotExistsException("User {"+ username +"} not found");
+        UserEntity user = temp.get();
+
+        Optional<TCGEntity> temp2 = this.tcgRepository.findById(listDTO.getTcgId());
+        if(temp2.isEmpty()) throw new TCGNotFoundException("TCG Id {" + listDTO.getTcgId() + "} not found");
+        TCGEntity tcg = temp2.get();
+
+        UserTCGList tcgList = new UserTCGList();
+
+        tcgList.setListName(listDTO.getListName());
+        tcgList.setListType(listDTO.getType());
+        tcgList.setListVisibility(listDTO.getVisibility());
+        tcgList.setTcg(tcg);
+        tcgList.setUser(user);
+
+        return this.tcgService.createUserTCGList(tcgList);
+
+    }
+
+
+
+    @Transactional
+    public TCGListDTO addCardToList(TCGListEntryDTO entryDTO, String username) {
+        Optional<TCGEntity> temp = this.tcgRepository.findById(entryDTO.getTcgID());
+        if(temp.isEmpty()) throw new TCGNotFoundException("TCG with ID {" + entryDTO.getTcgID() + "} not found.");
+        Optional<CardEntity> temp2 = this.cardService.getCard(entryDTO.getCard().getCardId(), temp.get());
+        if(temp2.isEmpty()) throw new CardNotFoundException("Card " + entryDTO.getCard().toString() + "/nNot Found");
+
+        Optional<UserTCGList> temp3 = this.userTCGListRepository.findById(entryDTO.getListId());
+        if(temp3.isEmpty()) throw new UserTCGListNotFoundException("TCG List with ID {" + entryDTO.getListId() + "} not found");
+        UserTCGList list = temp3.get();
+        if(!list.getUser().getUsername().equals(username)) throw new UnauthorizedException("Unauthorized Access to List with ID {" + list.getId() + "} from user {" + username + "}");
+
+        return this.tcgService.addCardToList(temp2.get(), list.getId(), username, entryDTO.getEntryQuantity());
+    }
+
+
+    @Transactional
+    public TCGListDTO editCardEntry(Long entryId, String username, Long userListID, int quantity) {
+        return this.tcgService.editCardEntry(entryId, userListID, username, quantity);
+    }
+
+    @Transactional
+    public List<TCGListEntryDTO> getListCards(Long listID, String username) {
+        List<TCGListEntry> listEntry =  this.tcgService.getListCards(listID, username);
+
+        List<TCGListEntryDTO> entryDTO = new ArrayList<>();
+
+        for(TCGListEntry entry : listEntry) {
+            entryDTO.add(this.fromEntity(entry));
+        }
+
+        return entryDTO;
+    }
+
+
 }
